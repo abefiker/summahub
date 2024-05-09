@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer')
-const sendEmail = async options => {
-    //1) create transport
+const nodemailer = require('nodemailer');
+
+const sendEmail = async (options) => {
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -8,17 +8,20 @@ const sendEmail = async options => {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD
         }
-    })
-    //2) Define the email options
+    });
+
     const mailOptions = {
         from: process.env.EMAIL_FROM,
-        to: options.email,
+        to: options.user.email,
         subject: options.subject,
-        text: options.message,
-        html: `<p>${options.message}</p>`
-    }
-    //3) Send the email
-    await transport.sendMail(mailOptions)
-}
+        html: `
+            <p>Forgot your password? Click <a href="http://localhost:3000/resetPassword/${options.resetToken}" > here</a> to reset your password.</p>
+            <p>If you didn't forget your password, please ignore this email.</p>
+            <p>${options.resetToken}</p>
+        `
+    };
 
-module.exports = sendEmail 
+    await transport.sendMail(mailOptions);
+};
+
+module.exports = sendEmail;
